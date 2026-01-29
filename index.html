@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日語課程：從偶像活動到職場應用 (Final Print Ver.)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Zen Maru Gothic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* 自定義樣式 */
+        body {
+            font-family: 'Zen Maru Gothic', "Microsoft JhengHei", sans-serif;
+            background-color: #E0F2F7;
+            background-image: radial-gradient(#B3E5FC 2px, transparent 2px);
+            background-size: 20px 20px;
+            color: #5D4037;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        ruby {
+            ruby-align: center;
+        }
+        rt {
+            user-select: none;
+            font-size: 0.6em;
+            color: #8D6E63;
+            font-weight: 400;
+            margin-bottom: -0.2em;
+        }
+        
+        /* A4 容器 (單頁模式) */
+        .a4-paper {
+            width: 100%;
+            max-width: 210mm;
+            height: 100%;
+            aspect-ratio: 210 / 297;
+            max-height: 95vh;
+            margin: 0 auto;
+            background: #FAFDFF;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(135, 206, 235, 0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+            border-radius: 16px;
+            border: 8px solid #E1F5FE;
+            transition: all 0.3s ease;
+        }
+
+        /* 列表/列印模式 */
+        .a4-paper.list-mode {
+            aspect-ratio: auto;
+            height: auto;
+            max-height: none;
+            overflow: visible;
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            display: block;
+        }
+
+        .list-mode-slide {
+            width: 100%;
+            max-width: 210mm;
+            aspect-ratio: 210 / 297;
+            background: #FAFDFF;
+            margin: 0 auto 40px auto;
+            border: 8px solid #E1F5FE;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+            page-break-after: always;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 裝飾 Emoji */
+        .deco-emoji {
+            position: absolute;
+            opacity: 0.4;
+            pointer-events: none;
+            font-size: 3rem;
+            z-index: 0;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #81D4FA; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4FC3F7; }
+
+        @media print {
+            body { background: white; margin: 0; padding: 0; display: block; }
+            .a4-paper, .a4-paper.list-mode { width: 100%; max-width: none; margin: 0; border: none; box-shadow: none; background: white; }
+            .list-mode-slide { margin: 0; border: none; border-radius: 0; box-shadow: none; page-break-after: always; height: 100vh; }
+            #header-controls, #nav-bar, .deco-emoji, .no-print { display: none !important; }
+            #header { display: none !important; }
+            #content { overflow: visible !important; }
+            @page { size: A4 portrait; margin: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen py-4">
+
+    <div id="app" class="a4-paper">
+        <div id="decorations">
+            <div class="deco-emoji" style="top: 2%; left: 2%;">❄️</div>
+            <div class="deco-emoji" style="top: 5%; right: 5%;">✨</div>
+            <div class="deco-emoji" style="bottom: 15%; left: 5%;">🍰</div>
+            <div class="deco-emoji" style="bottom: 10%; right: 3%;">☕</div>
+        </div>
+
+        <div id="header" class="h-16 bg-sky-200 flex items-center justify-between px-6 text-sky-900 shrink-0 border-b-4 border-sky-100 z-10 relative">
+            <div id="header-title" class="font-bold text-2xl tracking-wider flex items-center gap-3 drop-shadow-sm"></div>
+            <div id="header-controls" class="flex items-center gap-3">
+                <button onclick="toggleViewMode()" class="bg-white hover:bg-sky-50 text-sky-600 px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 border-2 border-sky-100 shadow-sm transition-all hover:scale-105 active:scale-95">
+                    <i data-lucide="align-justify" class="w-4 h-4"></i>
+                    <span id="view-mode-text">全部顯示 (列表/列印用)</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="content" class="flex-1 p-6 md:p-10 relative flex flex-col z-10 overflow-y-auto custom-scrollbar"></div>
+
+        <div id="nav-bar" class="h-18 bg-white/90 backdrop-blur-sm border-t border-sky-100 flex items-center justify-between px-6 py-3 shrink-0 select-none z-20 transition-all">
+            <button id="btn-prev" onclick="prevSlide()" class="flex items-center gap-2 px-5 py-2 rounded-full font-bold transition-all text-sky-600 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-lg shadow-sm">
+                <i data-lucide="chevron-left" class="w-6 h-6"></i> <span class="hidden md:inline">前へ</span>
+            </button>
+            <div id="page-indicator" class="text-sky-500 font-bold text-xl bg-white px-4 py-1 rounded-full border border-sky-100 shadow-sm"></div>
+            <button id="btn-next" onclick="nextSlide()" class="flex items-center gap-2 px-5 py-2 rounded-full font-bold transition-all bg-sky-400 text-white hover:bg-sky-500 shadow-md border-b-4 border-sky-500 hover:border-sky-600 active:border-b-0 active:translate-y-1 text-lg">
+                <span class="hidden md:inline">次へ</span> <i data-lucide="chevron-right" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- 課程資料 ---
+        const slides = [
+            // --- 課程導入 ---
+            {
+                id: 'intro-01',
+                theme: 'プロローグ (序章)',
+                type: 'intro',
+                title: '主人公（しゅじんこう）紹介（しょうかい）',
+                subtitle: '張（チョウ）さんの物語（ものがたり）',
+                content: {
+                    name: '張（チョウ）さん',
+                    role: '男（おとこ）',
+                    job: 'ストレッチトレーナー / ストレッチの先生（せんせい）',
+                    likes: ['yosugala', 'ポケモン (水色系)', 'Akiちゃん (メイド)'],
+                    goal: '日本語（にほんご）で　話（はな）したい！'
+                }
+            },
+            
+            // ==========================================
+            // 主題 1: 日本偶像交流
+            // ==========================================
+            {
+                id: 't1-01',
+                theme: '主題 1: 日本偶像交流',
+                type: 'title',
+                title: 'アイドルの特典会（とくてんかい）',
+                subtitle: '1分間（いっぷんかん）の幸（しあわ）せ',
+                note: '每次排隊 30-50 分鐘，只為了那珍貴的一分鐘。讓我們練習這段時間要說什麼！'
+            },
+            // 單字 (改為雙欄顯示)
+            {
+                id: 't1-vocab-1',
+                theme: '主題 1: 日本偶像交流',
+                type: 'vocab',
+                title: '単語（たんご） (特典会・ライブ)',
+                content: [
+                { jp: '特典会（とくてんかい）', type: '名詞', zh: '粉絲福利會/見面會' },
+                { jp: 'チェキ', type: '名詞', zh: '拍立得' },
+                { jp: 'ライブ', type: '名詞', zh: 'Live 演唱會' },
+                { jp: '並（なら）びます', type: '動詞', zh: '排隊' },
+                { jp: '待（ま）ちます', type: '動詞', zh: '等待' },
+                { jp: '1分（いっぷん）', type: '時間', zh: '1分鐘' },
+                { jp: '1枚（いちまい）', type: '量詞', zh: '一張' },
+                { jp: '嬉（うれ）しい', type: '形容詞', zh: '開心的' },
+                { jp: '大好（だいす）き', type: '形容動詞', zh: '最喜歡' },
+                { jp: '張（チョウ）', type: '名詞', zh: '張 (姓氏)' }
+                ]
+            },
+            {
+                id: 't1-vocab-2',
+                theme: '主題 1: 日本偶像交流',
+                type: 'vocab',
+                title: '単語（たんご） (感情・その他)',
+                content: [
+                { jp: '初恋（はつこい）', type: '名詞', zh: '初戀' },
+                { jp: '地下（ちか）アイドル', type: '名詞', zh: '地下偶像' },
+                { jp: '応援（おうえん）します', type: '動詞', zh: '加油/應援' },
+                { jp: '緊張（きんちょう）します', type: '動詞', zh: '緊張' },
+                { jp: '幸（しあわ）せ', type: '名/形動', zh: '幸福' },
+                { jp: '長（なが）い', type: '形容詞', zh: '長的' },
+                { jp: '短（みじか）い', type: '形容詞', zh: '短的' },
+                { jp: '今日（きょう）', type: '名詞', zh: '今天' },
+                { jp: 'いつも', type: '副詞', zh: '總是/一直' },
+                { jp: '買（か）います', type: '動詞', zh: '買' }
+                ]
+            },
+            // 課文
+            {
+                id: 't1-02',
+                theme: '主題 1: 日本偶像交流',
+                type: 'story',
+                title: '本文（ほんぶん） 1：長（なが）い列（れつ）',
+                content: [
+                { jp: '今日（きょう）は　ライブです。', zh: '今天是 Live。' },
+                { jp: '特典会（とくてんかい）に　並（なら）びます。', zh: '排隊參加特典會。' },
+                { jp: '待（ま）ち時間（じかん）は　50分（ごじゅっぷん）です。', zh: '等待時間是 50 分鐘。' },
+                { jp: 'でも、会（あ）いたいです。', zh: '但是，想見妳。' }
+                ]
+            },
+            {
+                id: 't1-03',
+                theme: '主題 1: 日本偶像交流',
+                type: 'story',
+                title: '本文（ほんぶん） 2：チェキ券（けん）',
+                content: [
+                { jp: 'チェキ券（けん）を　買（か）います。', zh: '買拍立得券。' },
+                { jp: '1枚（いちまい）　250元（げん）です。', zh: '一張 250 元。' },
+                { jp: '時間（じかん）は　1分（いっぷん）です。', zh: '時間是一分鐘。' },
+                { jp: 'ドキドキします。', zh: '心跳很快/很緊張。' }
+                ]
+            },
+            // 文法
+            {
+                id: 't1-07',
+                theme: '主題 1: 日本偶像交流',
+                type: 'grammar',
+                title: '文法（ぶんぽう） 1',
+                subtitle: 'A は B です。',
+                content: {
+                explanation: '這是最基礎的句型，用來告訴偶像你是誰。',
+                examples: [
+                    { jp: '私（わたし）は　張（チョウ）です。', zh: '我是張。' },
+                    { jp: 'これ は　チェキ券（けん）です。', zh: '這是拍立得券。' },
+                    { jp: '待（ま）ち時間（じかん）は　50分（ごじゅっぷん）です。', zh: '等待時間是50分鐘。' }
+                ]
+                }
+            },
+            {
+                id: 't1-08',
+                theme: '主題 1: 日本偶像交流',
+                type: 'grammar',
+                title: '文法（ぶんぽう） 2',
+                subtitle: 'A が 好（す）きです / 大好（だいす）きです。',
+                content: {
+                explanation: '「大好き」比「好き」程度更強烈，偶像聽了會更開心。',
+                examples: [
+                    { jp: 'yosugala が　大好（だいす）きです。', zh: '我最喜歡 yosugala。' },
+                    { jp: 'あなた が　好（す）きです。', zh: '我喜歡妳。' },
+                    { jp: 'ライブ が　大好（だいす）きです。', zh: '我最喜歡 Live。' }
+                ]
+                }
+            },
+            // 文法練習
+            {
+                id: 't1-09',
+                theme: '主題 1: 日本偶像交流',
+                type: 'game',
+                title: '文法練習（ぶんぽうれんしゅう）',
+                subtitle: '請將文字重組成正確的句子',
+                content: [
+                { q: '[です] [私] [は] [張]', a: '_________________________________' },
+                { q: '[チェキ] [好き] [が] [です] [大好き]', a: '_________________________________' },
+                { q: '[時間] [1分] [です] [は]', a: '_________________________________' }
+                ]
+            },
+            // 會話練習
+            {
+                id: 't1-10',
+                theme: '主題 1: 日本偶像交流',
+                type: 'game',
+                title: '会話練習（かいわれんしゅう）：店員（てんいん）体験（たいけん）',
+                subtitle: 'あなたは物販（ぶっぱん）スタッフです。金額（きんがく）を答（こた）えてください。(1枚 250元)',
+                content: [
+                { q: '客（きゃく）: チェキ券（けん）、1枚（いちまい）　ください。', a: '店員（てんいん）: はい、__________________ 元（げん）です。' },
+                { q: '客（きゃく）: 2枚（にまい）　お願（ねが）いします。', a: '店員（てんいん）: はい、__________________ 元（げん）です。' },
+                { q: '客（きゃく）: 3枚（さんまい）　ください。', a: '店員（てんいん）: はい、__________________ 元（げん）です。' }
+                ]
+            },
+            // 對話實戰
+            {
+                id: 't1-04',
+                theme: '主題 1: 日本偶像交流',
+                type: 'dialogue',
+                title: '対話（たいわ）：推（お）しと話（はな）す',
+                content: [
+                { role: 'me', name: '張先生', text: '初（はじ）めまして。張（チョウ）です。', trans: '初次見面。我是張。' },
+                { role: 'idol', name: '偶像', text: '張（チョウ）さん！来（き）てくれてありがとう！', trans: '張先生！謝謝你來！' },
+                { role: 'me', name: '張先生', text: '______さんの　パフォーマンス　最高（さいこう）です。', trans: '______的表演最棒了。' },
+                { role: 'idol', name: '偶像', text: 'ありがとう！元気（げんき）が出（で）るよ！', trans: '謝謝！讓我充滿元氣喔！' },
+                { role: 'me', name: '張先生', text: '会（あ）えて　嬉（うれ）しいです。', trans: '能見到妳很開心。' }
+                ]
+            },
+            {
+                id: 't1-12',
+                theme: '主題 1: 日本偶像交流',
+                type: 'writing',
+                title: '文章練習（ぶんしょうれんしゅう）',
+                content: {
+                original: [
+                    '私（わたし）は　張（チョウ）です。',
+                    '台湾人（タイワンじん）です。',
+                    'yosugala が　大好（だいす）きです。',
+                    '今日（きょう）は　楽（たの）しかったです。'
+                ],
+                practice: [
+                    '私（わたし）は　_______ です。',
+                    '_______ です。(職業)',
+                    '_______ が　大好（だいす）きです。(興趣)',
+                    'また　来（き）ます。(我會再來)'
+                ]
+                }
+            },
+            {
+                id: 't1-13',
+                theme: '主題 1: 日本偶像交流',
+                type: 'summary',
+                title: 'まとめ',
+                content: [
+                'A は B です。(A是B)',
+                'A が 大好（だいす）きです。(最喜歡 A)',
+                '數量詞：1枚（いちまい）、1分（いっぷん）、50分（ごじゅっぷん）'
+                ]
+            },
+
+            // ==========================================
+            // 主題 2: 日常對話 (女僕咖啡 & 工作)
+            // ==========================================
+            {
+                id: 't2-vocab-1',
+                theme: '主題 2: 日常對話',
+                type: 'vocab',
+                title: '単語（たんご） (メイドカフェ)',
+                content: [
+                { jp: 'メイド', type: '名詞', zh: '女僕' },
+                { jp: '最低消費（さいていしょうひ）', type: '名詞', zh: '最低消費' },
+                { jp: 'シマエナガ', type: '名詞', zh: '銀喉長尾山雀' },
+                { jp: 'アローラロコン', type: '名詞', zh: '冰六尾' },
+                { jp: '素敵（すてき）', type: '形容詞', zh: '很棒/漂亮' },
+                { jp: '仕事（しごと）', type: '名詞', zh: '工作' },
+                { jp: '終（お）わります', type: '動詞', zh: '結束' },
+                { jp: '私（わたし）も', type: '片語', zh: '我也是' },
+                { jp: '同（おな）じ', type: '名/形動', zh: '一樣' },
+                { jp: '写真（しゃしん）', type: '名詞', zh: '照片' }
+                ]
+            },
+            {
+                id: 't2-vocab-2',
+                theme: '主題 2: 日常對話',
+                type: 'vocab',
+                title: '単語（たんご） (仕事)',
+                content: [
+                { jp: 'ストレッチ', type: '名詞', zh: '伸展' },
+                { jp: '痛（いた）い', type: '形容詞', zh: '痛' },
+                { jp: '硬（かた）い', type: '形容詞', zh: '硬' },
+                { jp: '柔（やわ）らかい', type: '形容詞', zh: '軟' },
+                { jp: 'ここ / そこ', type: '代名詞', zh: '這裡 / 那裡' },
+                { jp: '息（いき）', type: '名詞', zh: '呼吸' },
+                { jp: '吸（す）って', type: '動詞', zh: '吸氣' },
+                { jp: '吐（は）いて', type: '動詞', zh: '吐氣' },
+                { jp: 'リラックス', type: '動詞', zh: '放鬆' },
+                { jp: 'お疲（つか）れ様（さま）', type: '挨拶', zh: '辛苦了' }
+                ]
+            },
+            {
+                id: 't2-01',
+                theme: '主題 2: 日常對話',
+                type: 'dialogue',
+                title: '本文（ほんぶん） 1：「心物語」へ',
+                content: [
+                { role: 'me', name: '張先生', text: '仕事（しごと）、終（お）わりました！', trans: '工作結束了！' },
+                { role: 'maid', name: 'Aki', text: 'お帰（かえ）りなさいませ、ご主人様（しゅじんさま）。', trans: '歡迎回家，主人。' },
+                { role: 'me', name: '張先生', text: 'Akiさん、会（あ）いに　来（き）ました。', trans: 'Aki小姐，我來看妳了。' },
+                { role: 'maid', name: 'Aki', text: 'あら、また来（き）たの？ ...まあ、ゆっくりしていって。', trans: '哎呀，又來了？...算了，你就好好放鬆吧。(傲嬌)' }
+                ]
+            },
+            {
+                id: 't2-02',
+                theme: '主題 2: 日常對話',
+                type: 'dialogue',
+                title: '本文（ほんぶん） 2：共通点（きょうつうてん）',
+                content: [
+                { role: 'me', name: '張先生', text: 'Akiちゃんは　何（なに）が　好（す）きですか？', trans: 'Aki 醬喜歡什麼？' },
+                { role: 'maid', name: 'Aki', text: 'シマエナガと　アローラロコンが　好（す）きです！', trans: '我喜歡銀喉長尾山雀和冰六尾！' },
+                { role: 'me', name: '張先生', text: 'Akiちゃん、最近（さいきん）　何（なに）を　買（か）いましたか？', trans: 'Aki 醬，最近買了什麼？' },
+                { role: 'maid', name: 'Aki', text: '...後（あと）で　チェキの　ぬいぐるみ　見（み）せてあげる。', trans: '...等等給你看拍立得上面的娃娃。' }
+                ]
+            },
+            {
+                id: 't2-05',
+                theme: '主題 2: 日常對話',
+                type: 'grammar',
+                title: '文法（ぶんぽう）：名詞修飾',
+                subtitle: '名詞 / 形容詞 + 名詞',
+                content: {
+                explanation: '用名詞或形容詞來修飾後面的名詞，讓描述更豐富。',
+                examples: [
+                    { jp: 'ポケモン の ゲーム', zh: '寶可夢的遊戲 (名詞+の+名詞)' },
+                    { jp: '青（あお）い ポケモン', zh: '藍色的寶可夢 (い形容詞直接+名詞)' },
+                    { jp: '素敵（すてき）な メイド', zh: '很棒的女僕 (な形容詞+な+名詞)' },
+                    { jp: '有名（ゆうめい）な 店（みせ）', zh: '有名的店 (な形容詞+な+名詞)' }
+                ]
+                }
+            },
+            {
+                id: 't2-06',
+                theme: '主題 2: 日常對話',
+                type: 'writing',
+                title: '文章練習（ぶんしょうれんしゅう）',
+                content: {
+                original: [
+                    'Akiちゃんは　アローラロコンが　好（す）きです。',
+                    '私（わたし）も　アローラロコンが　好（す）きです。',
+                    '同（おな）じです。'
+                ],
+                practice: [
+                    'Aki 醬喜歡冰六尾。',
+                    '我也喜歡冰六尾。',
+                    '我們一樣。'
+                ]
+                }
+            },
+
+            // ==========================================
+            // 主題 3: 寶可夢
+            // ==========================================
+            {
+                id: 't3-03',
+                theme: '主題 3: 寶可夢與動畫',
+                type: 'vocab',
+                title: '単語（たんご） (特徴・タイプ)',
+                content: [
+                { jp: '水色（みずいろ）', type: '名詞', zh: '水藍色' },
+                { jp: '青（あお）', type: '名詞', zh: '藍色' },
+                { jp: '白（しろ）', type: '名詞', zh: '白色' },
+                { jp: '氷（こおり）', type: '名詞', zh: '冰' },
+                { jp: 'タイプ', type: '名詞', zh: '屬性/類型' },
+                { jp: '一番（いちばん）', type: '副詞', zh: '最/第一' },
+                { jp: '例（たと）えば', type: '副詞', zh: '例如' },
+                { jp: '綺麗（きれい）', type: '形容動詞', zh: '漂亮' },
+                { jp: '進化（しんか）', type: '名/動', zh: '進化' },
+                { jp: '集（あつ）めます', type: '動詞', zh: '收集' }
+                ]
+            },
+            {
+                id: 't3-01',
+                theme: '主題 3: 寶可夢與動畫',
+                type: 'dialogue',
+                title: '対話（たいわ）：ポケモンの話',
+                content: [
+                { role: 'other', name: '朋友', text: 'どのポケモンが　好（す）きですか？', trans: '喜歡哪種寶可夢？' },
+                { role: 'me', name: '張先生', text: '水色（みずいろ）のポケモンが　好（す）きです。', trans: '喜歡水藍色的寶可夢。' },
+                { role: 'other', name: '朋友', text: '例（たと）えば？', trans: '例如？' },
+                { role: 'me', name: '張先生', text: 'アローラロコンです。一番（いちばん）好（す）きです。', trans: '冰六尾。最喜歡了。' }
+                ]
+            },
+            {
+                id: 't3-02',
+                theme: '主題 3: 寶可夢與動畫',
+                type: 'story',
+                title: '本文（ほんぶん）：なぜ好（す）き？',
+                content: [
+                { jp: 'アローラロコンは　白（しろ）くて　綺麗（きれい）です。', zh: '冰六尾又白又漂亮。' },
+                { jp: '氷（こおり）タイプです。', zh: '是冰屬性的。' },
+                { jp: 'とても　可愛（かわい）いです。', zh: '非常可愛。' }
+                ]
+            },
+            {
+                id: 't3-04',
+                theme: '主題 3: 寶可夢與動畫',
+                type: 'grammar',
+                title: '例文（れいぶん）：形容詞（けいようし）',
+                subtitle: '',
+                content: {
+                explanation: '',
+                examples: [
+                    { jp: '一番（いちばん） 好（す）きです。', zh: '最喜歡。' },
+                    { jp: '白（しろ）くて、可愛（かわい）いです。', zh: '又白又可愛。' },
+                    { jp: '綺麗（きれい）で、有名（ゆうめい）です。', zh: '又漂亮又有名。' },
+                    { jp: '体（からだ）が　硬（かた）くて、痛（いた）いです。', zh: '身體又硬又痛。' },
+                    { jp: 'ストレッチは　気持（きも）ちよくて、大切（たいせつ）です。', zh: '伸展又舒服又重要。' },
+                    { jp: 'お客（きゃく）さんは　真面目（まじめ）で、優（やさ）しいです。', zh: '客人又認真又溫柔。' }
+                ]
+                }
+            },
+            {
+                id: 't3-04-ex',
+                theme: '主題 3: 寶可夢與動畫',
+                type: 'grammar',
+                title: '文法（ぶんぽう） 2：形容詞（けいようし）の接続（せつぞく）',
+                subtitle: 'いA -> くて + N / なA -> で + N',
+                content: {
+                    explanation: '強調：<br>● い形容詞 ＋ くて ＋ 名詞<br>● な形容詞 ＋ で ＋ 名詞',
+                    examples: [
+                        { jp: '白（しろ）くて　可愛（かわい）い　ポケモン', zh: '又白又可愛的寶可夢 (い形容詞 -> くて)' },
+                        { jp: '強（つよ）くて　かっこいい　ヒーロー', zh: '又強又帥氣的英雄 (い形容詞 -> くて)' },
+                        { jp: '綺麗（きれい）で　有名（ゆうめい）な　場所（ばしょ）', zh: '又漂亮又有名的地點 (な形容詞 -> で)' }
+                    ]
+                }
+            },
+            {
+                id: 't3-05',
+                theme: '主題 3: 寶可夢與動畫',
+                type: 'game',
+                title: '文法練習：形容詞（けいようし）の接続（せつぞく）',
+                subtitle: 'つなげて言いましょう (試著連起來說說看)',
+                content: [
+                { q: 'ピカチュウは　黄色（きいろ）い。可愛（かわい）い。', a: 'ピカチュウは　_________________________________' },
+                { q: 'カビゴンは　強（つよ）い。大（おお）きい。', a: 'カビゴンは　_________________________________' },
+                { q: 'アローラロコンは　白（しろ）い。綺麗（きれい）だ。', a: 'アローラロコンは　_________________________________' },
+                { q: 'ミミッキュは　寂（さび）しい。強（つよ）い。', a: 'ミミッキュは　_________________________________' }
+                ]
+            },
+
+            // ==========================================
+            // 主題 4: 台灣觀光
+            // ==========================================
+            {
+                id: 't4-03',
+                theme: '主題 4: 介紹台灣觀光',
+                type: 'vocab',
+                title: '単語（たんご） (観光)',
+                content: [
+                { jp: '案内（あんない）します', type: '動詞', zh: '帶路/導覽' },
+                { jp: '行（い）きたい', type: '動詞', zh: '想去' },
+                { jp: '食（た）べたい', type: '動詞', zh: '想吃' },
+                { jp: '夜市（よいち）', type: '名詞', zh: '夜市' },
+                { jp: '小籠包（ショーロンポー）', type: '名詞', zh: '小籠包' },
+                { jp: 'タピオカ', type: '名詞', zh: '珍珠奶茶' },
+                { jp: '電車（でんしゃ）', type: '名詞', zh: '電車/捷運' },
+                { jp: '近（ちか）い', type: '形容詞', zh: '近' },
+                { jp: '遠（とお）い', type: '形容詞', zh: '遠' },
+                { jp: '一緒（いっしょ）に', type: '副詞', zh: '一起' }
+                ]
+            },
+            {
+                id: 't4-01',
+                theme: '主題 4: 介紹台灣觀光',
+                type: 'dialogue',
+                title: '対話（たいわ）：台湾へ行きたい',
+                content: [
+                { role: 'idol', name: 'YOSUGALA', text: '今度（こんど）、台北（タイペイ）に　行（い）きます！', trans: '下次要去台北！' },
+                { role: 'me', name: '張先生', text: '案内（あんない）しますよ。どこへ　行（い）きたいですか？', trans: '我帶路喔。想去哪裡？' },
+                { role: 'idol', name: 'YOSUGALA', text: '美味（おい）しい店（みせ）は　ありますか？', trans: '有好吃的店嗎？' },
+                { role: 'me', name: '張先生', text: 'たくさん　ありますよ。夜市（よいち）へ　行（い）きましょう！', trans: '有很多喔。去夜市吧！' },
+                { role: 'idol', name: 'YOSUGALA', text: 'わあ、楽（たの）しみ！絶対（ぜったい）　行（い）きます！', trans: '哇，好期待！絕對要去！' }
+                ]
+            },
+            {
+                id: 't4-02',
+                theme: '主題 4: 介紹台灣觀光',
+                type: 'story',
+                title: '本文（ほんぶん）：おすすめ',
+                content: [
+                { jp: '夜市（よいち）が　あります。', zh: '有夜市。' },
+                { jp: 'タピオカが　美味（おい）しいです。', zh: '珍珠奶茶很好吃。' },
+                { jp: '一緒（いっしょ）に　行（い）きましょう。', zh: '一起去吧。' }
+                ]
+            },
+            {
+                id: 't4-04',
+                theme: '主題 4: 介紹台灣觀光',
+                type: 'grammar',
+                title: '文法（ぶんぽう）：存在（そんざい）',
+                subtitle: '場所 に 物 が あります',
+                content: {
+                explanation: '表達哪裡有什麼東西。(一晩中（ひとばんじゅう）　この文法（ぶんぽう）を　練習（れんしゅう）しました！)',
+                examples: [
+                    { jp: '台北（タイペイ） に ポケセン が あります。', zh: '台北有寶可夢中心。' },
+                    { jp: 'あそこ に 美味（おい）しい 店（みせ） が あります。', zh: '那裡有好吃的店。' },
+                    { jp: '夜市（よいち） に トイレ が ありますか？', zh: '夜市有廁所嗎？' }
+                ]
+                }
+            },
+            {
+                id: 't4-05',
+                theme: '主題 4: 介紹台灣觀光',
+                type: 'writing',
+                title: '文章練習（ぶんしょうれんしゅう）',
+                content: {
+                original: [
+                    '台北（タイペイ）に　ポケモンセンターが　あります。',
+                    '私（わたし）は　行（い）きたいです。',
+                    '一緒（いっしょ）に　行（い）きましょう。'
+                ],
+                practice: [
+                    '台北有寶可夢中心。',
+                    '我想去。',
+                    '一起去吧。'
+                ]
+                }
+            },
+            {
+                id: 'end',
+                theme: '課程結束',
+                type: 'summary',
+                title: '文法（ぶんぽう）まとめ',
+                content: [
+                'A は B です。 (A是B)',
+                'A が 好（す）きです。 (喜歡A)',
+                '修飾（しゅうしょく）：いA + N / なA + な + N / N + の + N',
+                '接続（せつぞく）：いA → くて / なA → で',
+                '場所（ばしょ） に 物（もの） が あります。 (在...有...)'
+                ]
+            }
+        ];
+
+        // --- 核心變數 ---
+        let currentSlideIndex = 0;
+        let isListMode = false;
+
+        // --- 核心功能函數 ---
+
+        // 解析漢字標音 (Ruby Text)
+        function parseRuby(text, className = "") {
+            if (!text) return '';
+            const regex = /([\u4e00-\u9faf\u3005-\u3007\u3040-\u309f\u30a0-\u30ff]+?)（([\u3040-\u309f\u30a0-\u30ff]+?)）/g;
+            let result = '';
+            let lastIndex = 0;
+            let match;
+
+            while ((match = regex.exec(text)) !== null) {
+                result += `<span class="${className}">${text.substring(lastIndex, match.index)}</span>`;
+                result += `
+                    <ruby class="mx-0.5 ${className}">
+                        ${match[1]}
+                        <rt class="font-normal select-none">${match[2]}</rt>
+                    </ruby>
+                `;
+                lastIndex = regex.lastIndex;
+            }
+            result += `<span class="${className}">${text.substring(lastIndex)}</span>`;
+            return `<span class="inline-flex flex-wrap items-baseline ${className}">${result}</span>`;
+        }
+
+        // 生成單頁內容 HTML
+        function generateSlideHtml(slide) {
+            let html = '';
+            const titleClass = "text-4xl font-bold text-sky-800 tracking-wide mb-4 drop-shadow-sm";
+            const subTitleClass = "text-xl text-sky-500 font-bold mb-6";
+
+            switch (slide.type) {
+                case 'intro': 
+                    html = `
+                        <div class="flex flex-col items-center h-full pt-2 text-center space-y-4">
+                            <div class="w-24 h-24 bg-sky-100 rounded-full flex items-center justify-center mb-2 border-4 border-white shadow-md">
+                                <i data-lucide="user" class="w-14 h-14 text-sky-500"></i>
+                            </div>
+                            <h1 class="${titleClass}">
+                                ${parseRuby(slide.title)}
+                            </h1>
+                            <h2 class="${subTitleClass}">
+                                ${parseRuby(slide.subtitle)}
+                            </h2>
+                            <div class="bg-white/80 backdrop-blur-sm p-6 rounded-3xl w-full max-w-2xl text-left space-y-6 shadow-sm border-2 border-sky-100 relative overflow-hidden">
+                                <div class="absolute -right-4 -top-4 text-6xl opacity-10 rotate-12">📝</div>
+                                <div class="flex items-center gap-4 relative z-10">
+                                    <span class="w-24 font-bold text-sky-400 text-lg">名前：</span>
+                                    <span class="text-2xl font-bold text-stone-700">${parseRuby(slide.content.name)}</span>
+                                </div>
+                                <div class="flex items-center gap-4 relative z-10">
+                                    <span class="w-24 font-bold text-sky-400 text-lg">仕事：</span>
+                                    <span class="text-xl text-stone-700">${slide.content.job}</span>
+                                </div>
+                                <div class="border-t-2 border-dashed border-sky-100 my-1"></div>
+                                <div class="relative z-10">
+                                    <span class="block font-bold text-sky-400 mb-2 text-lg">推（お）し：</span>
+                                    <ul class="space-y-2 text-xl text-stone-700">
+                                        ${slide.content.likes.map(like => `<li class="flex items-center"><span class="mr-2 text-sky-300">♥</span>${parseRuby(like)}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div class="border-t-2 border-dashed border-sky-100 my-1"></div>
+                                <div class="bg-sky-50 p-4 rounded-2xl text-center border border-sky-100 relative z-10">
+                                    <span class="text-sky-500 font-bold block mb-1 text-base">目標（もくひょう）</span>
+                                    <span class="text-2xl font-bold text-sky-700">${parseRuby(slide.content.goal)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'title':
+                    html = `
+                        <div class="flex flex-col items-center justify-center h-full text-center space-y-8">
+                            <h1 class="text-5xl font-bold text-sky-800 tracking-wide leading-tight px-4 drop-shadow-sm">
+                                ${parseRuby(slide.title)}
+                            </h1>
+                            ${slide.subtitle ? `
+                            <h2 class="text-3xl text-sky-500 font-bold">
+                                ${parseRuby(slide.subtitle)}
+                            </h2>` : ''}
+                            ${slide.note ? `
+                            <div class="mt-12 p-8 bg-amber-50 rounded-3xl border-4 border-amber-100 max-w-2xl text-amber-800 text-xl text-left shadow-sm relative leading-relaxed">
+                                <div class="absolute -top-5 left-8 bg-white px-3 py-1 rounded-full border-2 border-amber-100 text-2xl">💡</div>
+                                ${slide.note}
+                            </div>` : ''}
+                        </div>
+                    `;
+                    break;
+
+                case 'story':
+                    html = `
+                        <div class="flex flex-col h-full pt-2 px-4">
+                            <h2 class="${titleClass} text-center border-b-4 border-dotted border-sky-200 pb-3 inline-block mx-auto mb-6">
+                                ${parseRuby(slide.title)}
+                            </h2>
+                            <div class="space-y-4 flex-1">
+                                ${slide.content.map((item, idx) => `
+                                    <div class="bg-white/90 p-5 rounded-2xl shadow-sm border-2 border-sky-50 flex flex-col hover:border-sky-200 transition-colors relative group">
+                                        <div class="absolute -left-3 -top-3 w-8 h-8 rounded-full bg-sky-200 text-white flex items-center justify-center font-bold shadow-sm border-2 border-white text-lg">${idx + 1}</div>
+                                        <div class="pl-4">
+                                            <span class="text-2xl text-sky-900 mb-2 font-bold leading-relaxed block">
+                                                ${parseRuby(item.jp)}
+                                            </span>
+                                            <span class="text-xl text-stone-500 font-medium">${item.zh}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'dialogue':
+                    html = `
+                        <div class="flex flex-col h-full px-2">
+                            <h2 class="${titleClass} text-center flex items-center justify-center gap-3 pb-2 mb-4">
+                                <i data-lucide="message-circle" class="w-8 h-8 text-sky-400"></i>
+                                ${parseRuby(slide.title)}
+                            </h2>
+                            <div class="flex-1 space-y-6 overflow-visible px-2 pt-2">
+                                ${slide.content.map(msg => {
+                                    const isMe = msg.role === 'me';
+                                    return `
+                                        <div class="flex ${isMe ? 'justify-end' : 'justify-start'} group">
+                                            <div class="flex flex-col max-w-[90%] ${isMe ? 'items-end' : 'items-start'}">
+                                                <span class="text-xs text-stone-400 mb-1 ml-1 font-bold">${msg.name}</span>
+                                                <div class="p-5 rounded-3xl text-xl md:text-2xl leading-relaxed shadow-sm border-2 ${isMe ? 'bg-sky-400 text-white rounded-tr-none border-sky-400' : 'bg-white text-stone-700 rounded-tl-none border-stone-100'} relative">
+                                                    ${parseRuby(msg.text)}
+                                                </div>
+                                                <span class="text-base text-stone-400 mt-1 px-2 font-medium">${msg.trans}</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'vocab':
+                    html = `
+                        <div class="flex flex-col h-full">
+                            <h2 class="${titleClass} text-center border-b-4 border-dotted border-sky-200 pb-3 mb-4">
+                                ${parseRuby(slide.title)}
+                            </h2>
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${slide.content.map((item, idx) => `
+                                    <div class="flex items-center p-3 bg-white/80 rounded-2xl border border-sky-50 hover:bg-sky-50 transition-colors">
+                                        <div class="w-8 h-8 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-bold mr-4 shrink-0 text-base border border-sky-200">
+                                            ${idx + 1}
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="text-2xl font-bold text-sky-900 mb-1 leading-relaxed">
+                                                ${parseRuby(item.jp)}
+                                            </div>
+                                            <div class="flex items-center text-stone-500 text-lg font-medium">
+                                                <span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-lg text-xs mr-2 font-bold">${item.type}</span>
+                                                ${item.zh}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                
+                case 'grammar':
+                    html = `
+                        <div class="flex flex-col h-full pt-2 px-4 space-y-4"> <!-- Reduced spacing from 6 to 4 -->
+                            <div class="text-center space-y-4">
+                                <h2 class="${titleClass}">${parseRuby(slide.title)}</h2>
+                                ${slide.subtitle ? `<div class="text-2xl font-bold text-sky-600 bg-white inline-block px-8 py-4 rounded-2xl border-2 border-sky-100 shadow-sm transform -rotate-1">${parseRuby(slide.subtitle)}</div>` : ''}
+                                ${slide.content.explanation ? `<div class="text-xl text-stone-600 bg-amber-50 p-6 rounded-2xl border-2 border-amber-100 text-left relative leading-relaxed"><span class="absolute -top-3 left-6 bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold text-sm">ポイント</span>${slide.content.explanation}</div>` : ''}
+                            </div>
+                            
+                            <div class="space-y-3 bg-white/50 p-4 rounded-3xl border border-white flex-1 overflow-visible"> <!-- Reduced spacing/padding, allow flex-1 to take space -->
+                                ${slide.content.examples.length > 0 && !slide.subtitle.includes('いA') ? `<h3 class="text-lg font-bold text-sky-300 uppercase tracking-wider text-center border-b-2 border-sky-100 pb-2 mb-2">例（れい）</h3>` : ''}
+                                ${slide.content.examples.map(ex => `
+                                    <div class="bg-white p-3 rounded-2xl border border-sky-50 shadow-sm flex items-start gap-3"> <!-- Reduced padding to p-3 -->
+                                        <span class="text-sky-300 text-xl mt-1">●</span>
+                                        <div>
+                                            <div class="text-2xl text-sky-900 font-bold mb-1 leading-relaxed">${parseRuby(ex.jp)}</div>
+                                            <div class="text-lg text-stone-400 font-medium">${ex.zh}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'game':
+                    html = `
+                        <div class="flex flex-col h-full pt-4 px-4">
+                            <div class="text-center mb-6">
+                                <span class="inline-block p-3 rounded-full bg-amber-100 text-amber-500 mb-2 border-4 border-white shadow-sm">
+                                    <i data-lucide="gamepad-2" class="w-10 h-10"></i>
+                                </span>
+                                <h2 class="${titleClass}">${parseRuby(slide.title)}</h2>
+                                <p class="text-lg text-stone-500 font-bold bg-white/60 inline-block px-6 py-1 rounded-full">${slide.subtitle}</p>
+                            </div>
+                            <div class="space-y-4 flex-1">
+                                ${slide.content.map(item => `
+                                    <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-sky-100 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
+                                        <div class="text-xl font-bold text-sky-800 mb-3 flex gap-3 items-center">
+                                            <span class="bg-sky-400 text-white w-8 h-8 rounded-lg flex items-center justify-center shadow-sm text-lg">問</span>
+                                            ${parseRuby(item.q)}
+                                        </div>
+                                        <div class="text-lg text-stone-600 pl-4 border-l-4 border-amber-300 mt-2 bg-amber-50/50 p-2 rounded-r-lg">
+                                            <span class="text-xs text-amber-400 block mb-1 font-bold uppercase tracking-wider">答（こた）え</span>
+                                            ${parseRuby(item.a)}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'writing':
+                    html = `
+                        <div class="flex flex-col h-full pt-4 px-2">
+                            <h2 class="${titleClass} text-center mb-6">
+                                ${parseRuby(slide.title)}
+                            </h2>
+                            <div class="flex flex-col gap-6 h-full">
+                                <div class="bg-white p-6 rounded-3xl border-2 border-sky-100 shadow-sm relative">
+                                    <div class="absolute -top-3 left-6 bg-sky-100 text-sky-600 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2">
+                                        <i data-lucide="book-open" class="w-4 h-4"></i> お手本（てほん）
+                                    </div>
+                                    <div class="space-y-3 text-2xl text-stone-600 leading-relaxed mt-2">
+                                        ${slide.content.original.map(line => `<p class="border-b border-sky-50 pb-1">${parseRuby(line)}</p>`).join('')}
+                                    </div>
+                                </div>
+                                <div class="bg-stone-50 border-4 border-dashed border-sky-200 p-6 rounded-3xl flex-1 relative">
+                                    <div class="absolute -top-4 right-6 bg-amber-100 text-amber-600 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2 transform rotate-2">
+                                        <i data-lucide="pen-tool" class="w-4 h-4"></i> 練習（れんしゅう）
+                                    </div>
+                                    <div class="space-y-3 text-2xl text-stone-700 leading-relaxed mt-2">
+                                        ${slide.content.practice.map(line => `<p class="border-b border-stone-200 pb-1 h-12 flex items-end">${parseRuby(line)}</p>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'summary':
+                    html = `
+                         <div class="flex flex-col items-center justify-center h-full text-center px-4 space-y-8">
+                            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-500 mb-4 border-4 border-white shadow-md animate-bounce">
+                                <i data-lucide="check" class="w-10 h-10"></i>
+                            </div>
+                            <h2 class="${titleClass}">${parseRuby(slide.title)}</h2>
+                            <div class="bg-white/90 border-2 border-green-100 p-8 rounded-3xl w-full shadow-sm relative">
+                                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-50 text-green-600 px-4 py-1 rounded-full text-sm font-bold border border-green-100">まとめ</div>
+                                <ul class="text-left space-y-4">
+                                    ${slide.content.map(item => `
+                                        <li class="flex items-start text-xl text-stone-600">
+                                            <span class="text-green-400 mr-4 font-bold mt-1 text-2xl">✓</span>
+                                            <div class="flex-1 border-b-2 border-dotted border-stone-100 pb-2">
+                                                ${parseRuby(item)}
+                                            </div>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            return html;
+        }
+
+        function toggleViewMode() {
+            isListMode = !isListMode;
+            renderView();
+        }
+
+        function renderView() {
+            const contentDiv = document.getElementById('content');
+            const appDiv = document.getElementById('app');
+            const headerDiv = document.getElementById('header');
+            const navBar = document.getElementById('nav-bar');
+            const decorations = document.getElementById('decorations');
+            const viewModeText = document.getElementById('view-mode-text');
+            const headerTitle = document.getElementById('header-title');
+
+            if (isListMode) {
+                appDiv.classList.add('list-mode');
+                let fullHtml = '';
+                slides.forEach((slide, index) => {
+                    fullHtml += `
+                        <div class="list-mode-slide">
+                            <div class="absolute top-4 right-4 text-sky-300 font-bold text-lg z-20 opacity-50">Page ${index + 1}</div>
+                            <div class="flex-1 p-8 md:p-12 relative flex flex-col z-10">
+                                ${generateSlideHtml(slide)}
+                            </div>
+                        </div>
+                    `;
+                });
+                contentDiv.innerHTML = fullHtml;
+                viewModeText.textContent = "戻る (返回單頁)";
+                navBar.style.display = 'none';
+                decorations.style.display = 'none';
+                contentDiv.classList.remove('overflow-y-auto');
+                contentDiv.classList.add('overflow-visible');
+                headerTitle.innerHTML = `<span class="text-sky-700">🖨️ 全スライド (All Slides)</span>`;
+            } else {
+                appDiv.classList.remove('list-mode');
+                contentDiv.classList.add('overflow-y-auto');
+                contentDiv.classList.remove('overflow-visible');
+                navBar.style.display = 'flex';
+                decorations.style.display = 'block';
+                viewModeText.textContent = "全部顯示 (列表/列印用)";
+                renderSlide();
+            }
+            lucide.createIcons();
+        }
+
+        function renderSlide() {
+            const slide = slides[currentSlideIndex];
+            const contentDiv = document.getElementById('content');
+            const headerTitle = document.getElementById('header-title');
+            const pageIndicator = document.getElementById('page-indicator');
+            
+            let iconName = 'book-open';
+            if (slide.theme.includes('偶像')) iconName = 'heart';
+            if (slide.theme.includes('日常')) iconName = 'coffee';
+            if (slide.theme.includes('寶可夢')) iconName = 'star';
+            if (slide.theme.includes('觀光')) iconName = 'map-pin';
+            if (slide.type === 'intro') iconName = 'smile';
+
+            headerTitle.innerHTML = `<i data-lucide="${iconName}" class="w-8 h-8 text-sky-600"></i> ${slide.theme}`;
+            pageIndicator.innerText = `${currentSlideIndex + 1} / ${slides.length}`;
+            contentDiv.innerHTML = generateSlideHtml(slide);
+            updateNavState();
+        }
+
+        function updateNavState() {
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            if (currentSlideIndex === 0) {
+                btnPrev.disabled = true;
+                btnPrev.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+            } else {
+                btnPrev.disabled = false;
+                btnPrev.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
+            }
+            if (currentSlideIndex === slides.length - 1) {
+                btnNext.disabled = true;
+                btnNext.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+            } else {
+                btnNext.disabled = false;
+                btnNext.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                renderView();
+                document.getElementById('content').scrollTop = 0;
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                renderView();
+                document.getElementById('content').scrollTop = 0;
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (isListMode) return;
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        window.onload = () => { renderView(); };
+    </script>
+</body>
+</html>
